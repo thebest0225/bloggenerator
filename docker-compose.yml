@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  blog-generator:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 개발용 서비스 (주석 해제하여 사용)
+  # blog-generator-dev:
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - FLASK_ENV=development
+  #     - FLASK_DEBUG=1
+  #   volumes:
+  #     - ./:/app
+  #     - ./.env:/app/.env:ro
+  #   command: ["python", "web_app.py"] 

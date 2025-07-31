@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>망고 블로그 포스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background: white;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 사이드바 스타일 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #F5DEB3 0%, #DEB887 100%);
+            color: #5D4E37;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-300px);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(93, 78, 55, 0.2);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #5D4E37;
+        }
+
+        .sidebar-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(93, 78, 55, 0.1);
+        }
+
+        .sidebar-section h6 {
+            color: #8B4513;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 251, 240, 0.9);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            color: #5D4E37;
+            font-size: 0.9rem;
+        }
+
+        .form-control::placeholder {
+            color: rgba(93, 78, 55, 0.6);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 251, 240, 1);
+            border-color: #DAA520;
+            color: #5D4E37;
+            box-shadow: 0 0 0 0.2rem rgba(218, 165, 32, 0.2);
+        }
+
+        .form-select option {
+            color: #333;
+            background: white;
+        }
+
+        .btn-sidebar {
+            background: rgba(139, 69, 19, 0.2);
+            color: #5D4E37;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-sidebar:hover {
+            background: rgba(139, 69, 19, 0.3);
+            color: #3D2E1F;
+            transform: translateY(-1px);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 365px;
+            z-index: 1001;
+            background: #DAA520;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            padding: 10px 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle.collapsed {
+            left: 15px;
+            border-radius: 5px;
+        }
+
+        /* 메인 콘텐츠 영역 */
+        .main-content {
+            margin-left: 350px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: 50px;
+        }
+
+        .main-card { 
+            background: linear-gradient(135deg, #FFF7E3 0%, #F5E6D3 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.2); 
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.1);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card { 
+            background: linear-gradient(135deg, #FFFBF0 0%, #FFF7E3 100%);
+            border: 1px solid rgba(222, 184, 135, 0.2); 
+            box-shadow: 0 4px 20px rgba(139, 69, 19, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            color: white;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #B8860B, #8B7500);
+            border-color: #B8860B;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .btn-primary:focus, .btn-primary:active {
+            background: linear-gradient(135deg, #B8860B, #8B7500);
+            border-color: #B8860B;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(218, 165, 32, 0.3);
+        }
+
+        /* 카테고리 스타일 - 텍스트 형태 */
+        .category-item {
+            background: rgba(139, 69, 19, 0.1);
+            border-left: 3px solid rgba(218, 165, 32, 0.5);
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .category-item:hover {
+            background: rgba(139, 69, 19, 0.2);
+            border-left-color: #DAA520;
+            transform: translateX(3px);
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #5D4E37;
+        }
+
+        .category-desc {
+            font-size: 0.75rem;
+            color: #8B4513;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .keyword-list {
+            font-size: 0.8rem;
+            color: #A0522D;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .keyword-item {
+            display: inline;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .keyword-item:hover {
+            background: rgba(139, 69, 19, 0.2);
+            color: #DAA520;
+        }
+
+        .keyword-separator {
+            margin: 0 6px;
+            opacity: 0.5;
+            color: #8B4513;
+        }
+
+        /* 추천 키워드 - 텍스트 형태 */
+        .trending-section {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(93, 78, 55, 0.1);
+        }
+
+        .trending-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #5D4E37;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trending-keywords-list {
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .trending-keyword-item {
+            display: inline;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #8B4513;
+        }
+
+        .trending-keyword-item:hover {
+            background: rgba(139, 69, 19, 0.2);
+            color: #DAA520;
+        }
+
+        .google-keyword {
+            color: rgba(66, 133, 244, 0.9);
+        }
+
+        .google-keyword:hover {
+            color: #4285f4;
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .naver-keyword {
+            color: white;
+        }
+
+        .naver-keyword:hover {
+            color: #03c75a;
+            background: rgba(3, 199, 90, 0.1);
+        }
+
+        .keyword-rank {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-right: 4px;
+        }
+
+        .keyword-separator {
+            margin: 0 8px;
+            opacity: 0.4;
+        }
+
+        /* 실시간 키워드 스타일 */
+        .realtime-item {
+            display: block;
+            padding: 6px 0;
+            margin: 3px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            color: #8B4513;
+            border-bottom: 1px solid rgba(93, 78, 55, 0.05);
+        }
+
+        .realtime-item:hover {
+            color: #DAA520;
+            transform: translateX(3px);
+        }
+
+        .realtime-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* 접기 기능 */
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: scale(1.1);
+        }
+
+        .collapsible-content {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .collapsed .collapsible-content {
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            opacity: 0;
+        }
+
+        .collapsed .card-header {
+            border-radius: 15px !important;
+        }
+
+        .collapsed .collapse-btn i {
+            transform: rotate(180deg);
+        }
+
+        /* 블로그 생성 모달 스타일 */
+        .modal-content {
+            background: linear-gradient(135deg, #FFFBF0 0%, #FFF7E3 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            box-shadow: 0 20px 60px rgba(139, 69, 19, 0.2);
+            color: #5D4E37;
+        }
+
+        .prompt-type-card {
+            background: rgba(245, 222, 179, 0.3);
+            border: 2px solid rgba(222, 184, 135, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #5D4E37;
+        }
+
+        .prompt-type-card.selected {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: white;
+            border-color: #DAA520;
+        }
+
+        .prompt-type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.1);
+            background: rgba(245, 222, 179, 0.5);
+        }
+
+        /* 탭 스타일 */
+        .nav-pills .nav-link {
+            border-radius: 10px !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(218, 165, 32, 0.1);
+            color: #8B4513;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .nav-pills .nav-link:hover {
+            background: rgba(218, 165, 32, 0.2);
+            color: #5D4E37;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(218, 165, 32, 0.2);
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: white;
+            border-color: #DAA520;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .tab-content-wrapper {
+            position: relative;
+            background: linear-gradient(135deg, #FFFBF0 0%, #FFF7E3 100%);
+            border-radius: 0 0 15px 15px;
+            min-height: 500px;
+            max-height: 70vh;
+            overflow: hidden;
+            border: 1px solid rgba(222, 184, 135, 0.2);
+        }
+
+        .tab-content {
+            padding: 20px;
+            padding-bottom: 80px;
+            height: calc(70vh - 80px);
+            overflow-y: auto;
+            color: #5D4E37;
+        }
+
+        .tab-pane {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 고정 액션 바 스타일 */
+        .fixed-action-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0) 100%);
+            padding: 20px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #B8860B, #8B7500);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .action-btn.secondary:hover {
+            background: linear-gradient(135deg, #654321, #8B4513);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            box-shadow: 0 4px 15px rgba(34, 139, 34, 0.3);
+        }
+
+        .action-btn.success:hover {
+            background: linear-gradient(135deg, #1E7E1E, #228B22);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+        }
+
+        .action-btn.warning:hover {
+            background: linear-gradient(135deg, #FF7F00, #FF8C00);
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #CD853F, #DEB887);
+            box-shadow: 0 4px 15px rgba(205, 133, 63, 0.3);
+        }
+
+        .action-btn.info:hover {
+            background: linear-gradient(135deg, #BC7A36, #CD853F);
+        }
+
+        /* 컴팩트한 폰트 크기 조정 */
+        .main-content {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .main-content h1, .main-content h2, .main-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-content h4, .main-content h5, .main-content h6 {
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .main-content p, .main-content div, .main-content span {
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .card-body {
+            padding: 0.8rem;
+        }
+
+        .list-group-item {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .alert {
+            padding: 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.25em 0.5em;
+        }
+
+        /* 모달 폼 컴팩트 디자인 */
+        .modal-dialog {
+            max-width: 600px;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .modal-body h6 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .modal-body .form-control,
+        .modal-body .form-select {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
+
+        .modal-body .alert {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .prompt-type-card {
+            padding: 0.8rem;
+            margin: 0.3rem 0;
+        }
+
+        .prompt-type-card h6 {
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .prompt-type-card small {
+            font-size: 0.7rem;
+        }
+
+        /* 고정 액션 바 크기 조정 */
+        .fixed-action-bar {
+            padding: 15px;
+            background: linear-gradient(to top, rgba(255,251,240,1) 0%, rgba(255,251,240,0.95) 50%, rgba(255,251,240,0) 100%);
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 리스트 그룹 아이템 스타일 */
+        .list-group-item {
+            background: rgba(255, 251, 240, 0.8);
+            border: 1px solid rgba(222, 184, 135, 0.2);
+            color: #5D4E37;
+        }
+
+        .list-group-item:hover {
+            background: rgba(245, 222, 179, 0.5);
+            border-color: rgba(218, 165, 32, 0.3);
+        }
+
+        .list-group-item.active {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            border-color: #DAA520;
+            color: white;
+        }
+
+        /* 배지 스타일 */
+        .badge.bg-primary {
+            background: linear-gradient(135deg, #DAA520, #B8860B) !important;
+        }
+
+        .badge.bg-success {
+            background: linear-gradient(135deg, #228B22, #32CD32) !important;
+        }
+
+        .badge.bg-info {
+            background: linear-gradient(135deg, #CD853F, #DEB887) !important;
+        }
+
+        .badge.bg-warning {
+            background: linear-gradient(135deg, #FF8C00, #FFA500) !important;
+            color: white !important;
+        }
+
+        /* 이미지 컨테이너 호버 효과 */
+        .image-container:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                font-size: 0.8rem;
+            }
+
+            .sidebar-toggle {
+                left: 15px;
+            }
+
+            .nav-pills .nav-link {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+            }
+
+            .tab-content {
+                max-height: 60vh;
+            }
+
+            .action-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
+            /* 모바일에서 이미지 컬럼 조정 */
+            .image-results .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .image-container {
+                height: 200px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 사이드바 토글 버튼 -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- 사이드바 -->
+    <div class="sidebar" id="sidebar">
+        <!-- 사이드바 헤더 -->
+        <div class="sidebar-header">
+            <div class="mb-2">
+                <a href="/" style="text-decoration: none;">
+                    <img src="/attached_assets/logo_big2.png" alt="망고 블로그 포스트" style="max-height: 120px; height: auto; cursor: pointer;">
+                </a>
+            </div>
+            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.8;">by Mangoabba</p>
+            <div class="mt-2">
+                <a href="/logout" class="btn btn-sm btn-outline-light" style="font-size: 0.7rem; padding: 4px 8px;">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </a>
+            </div>
+        </div>
+
+        <!-- 키워드 검색 섹션 -->
+        <div class="sidebar-section">
+            <h6><i class="fas fa-search"></i> 키워드 검색</h6>
+            <div class="mb-3">
+                <input type="text" id="keywordInput" class="form-control" placeholder="키워드를 입력하세요">
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <select id="searchCount" class="form-select">
+                        <option value="10">10개</option>
+                        <option value="15" selected>15개</option>
+                        <option value="20">20개</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <select id="sortType" class="form-select">
+                        <option value="date">최신순</option>
+                        <option value="sim" selected>관련도순</option>
+                    </select>
+                </div>
+            </div>
+            <button id="searchBtn" class="btn btn-sidebar">
+                <i class="fas fa-search"></i> 검색 시작
+            </button>
+        </div>
+
+        <!-- 추천 키워드 섹션 -->
+        <div class="sidebar-section">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0"><i class="fas fa-lightbulb"></i> 추천 키워드</h6>
+                <button class="btn btn-sm btn-outline-light" onclick="refreshRecommendedKeywords()" title="새로고침">
+                    <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                </button>
+            </div>
+            <div id="recommendedKeywords">
+                <!-- 추천 키워드들이 여기에 동적으로 로드됩니다 -->
+            </div>
+            <div class="text-center mt-2">
+                <small class="text-muted">마지막 업데이트: <span id="lastUpdateTime">-</span></small>
+            </div>
+        </div>
+
+        <!-- 카테고리 섹션 -->
+        <div class="sidebar-section">
+            <h6><i class="fas fa-folder"></i> 카테고리별 키워드</h6>
+            <div id="categoryList">
+                <!-- 카테고리들이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content" id="mainContent">
+        <!-- 헤더 -->
+        <div class="main-card text-center mb-4 p-4">
+            <div class="mb-3">
+                <a href="/" style="text-decoration: none;">
+                    <img src="/attached_assets/logo.png" alt="망고 블로그 포스트" style="max-height: 160px; height: auto; cursor: pointer;">
+                </a>
+            </div>
+            <p class="text-muted">네이버 블로그 검색 → AI 분석 → 최적화된 블로그 글 생성</p>
+            <div class="mt-3">
+                <span class="badge bg-primary me-2">🚀 AI 분석</span>
+                <span class="badge bg-success me-2">📝 자동 생성</span>
+                <span class="badge bg-info me-2">🎯 키워드 최적화</span>
+                <span class="badge bg-warning">🖼️ 이미지 생성</span>
+            </div>
+        </div>
+
+        <!-- 메인 결과 탭 컨테이너 -->
+        <div id="resultsContainer" class="main-card" style="display: none;">
+            <!-- 탭 네비게이션 -->
+            <ul class="nav nav-pills nav-fill mb-3" id="resultTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="search-tab" data-bs-toggle="pill" data-bs-target="#search-content" type="button" role="tab">
+                        <i class="fas fa-chart-bar"></i> 검색결과
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="titles-tab" data-bs-toggle="pill" data-bs-target="#titles-content" type="button" role="tab">
+                        <i class="fas fa-lightbulb"></i> 생성제목
+                    </button>
+                </li>
+                <li class="nav-item" rolepresentation">
+                    <button class="nav-link" id="blog-tab" data-bs-toggle="pill" data-bs-target="#blog-content" type="button" role="tab">
+                        <i class="fas fa-file-alt"></i> 블로그글
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="images-tab" data-bs-toggle="pill" data-bs-target="#images-content" type="button" role="tab">
+                        <i class="fas fa-images"></i> 이미지
+                    </button>
+                </li>
+            </ul>
+
+            <!-- 탭 컨텐츠 래퍼 -->
+            <div class="tab-content-wrapper">
+                <!-- 탭 컨텐츠 -->
+                <div class="tab-content" id="resultTabContent">
+                    <!-- 검색 결과 탭 -->
+                    <div class="tab-pane fade show active" id="search-content" role="tabpanel" aria-labelledby="search-tab">
+                        <div id="searchResults"></div>
+                        <div id="analysisResults" style="display: none;"></div>
+                    </div>
+
+                    <!-- 생성된 제목 탭 -->
+                    <div class="tab-pane fade" id="titles-content" role="tabpanel" aria-labelledby="titles-tab">
+                        <div id="titleResults"></div>
+                    </div>
+
+                    <!-- 블로그 글 탭 -->
+                    <div class="tab-pane fade" id="blog-content" role="tabpanel" aria-labelledby="blog-tab">
+                        <div id="blogResults"></div>
+                    </div>
+
+                    <!-- 이미지 탭 -->
+                    <div class="tab-pane fade" id="images-content" role="tabpanel" aria-labelledby="images-tab">
+                        <div id="imageResults"></div>
+                    </div>
+                </div>
+
+                <!-- 고정 액션 바 -->
+                <div class="fixed-action-bar">
+                    <!-- 검색 결과 탭용 액션 버튼 -->
+                    <div id="search-actions" class="action-buttons" style="display: none;">
+                        <button class="action-btn" onclick="analyzeResults()">
+                            <i class="fas fa-brain"></i> AI 분석 시작
+                        </button>
+                    </div>
+
+                    <!-- 분석 결과용 액션 버튼 -->
+                    <div id="analysis-actions" class="action-buttons" style="display: none;">
+                        <button class="action-btn warning" onclick="generateTitles()">
+                            <i class="fas fa-lightbulb"></i> 새로운 제목 생성
+                        </button>
+                    </div>
+
+                    <!-- 제목 생성 탭용 액션 버튼 -->
+                    <div id="titles-actions" class="action-buttons" style="display: none;">
+                        <button class="action-btn" onclick="openBlogGenerationModal()">
+                            <i class="fas fa-pen"></i> 선택한 제목으로 블로그 글 생성
+                        </button>
+                    </div>
+
+                    <!-- 블로그 글 탭용 액션 버튼 -->
+                    <div id="blog-actions" class="action-buttons" style="display: none;">
+                        <button class="action-btn secondary" onclick="copyCurrentBlog()">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="action-btn success" onclick="downloadCurrentBlog()">
+                            <i class="fas fa-download"></i> 다운로드
+                        </button>
+                        <button class="action-btn info" onclick="generateImages_(4)">
+                            <i class="fas fa-images"></i> 이미지 생성
+                        </button>
+                    </div>
+
+                    <!-- 이미지 탭용 액션 버튼 -->
+                    <div id="images-actions" class="action-buttons" style="display: none;">
+                        <button class="action-btn info" onclick="generateImages_(4)">
+                            <i class="fas fa-plus"></i> 추가 이미지 생성
+                        </button>
+                        <button class="action-btn success" onclick="downloadAllImagesAsZip()">
+                            <i class="fas fa-download"></i> 모든 이미지 다운로드
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 로딩 및 상태 표시 -->
+        <div id="loading" class="text-center" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">처리 중...</p>
+        </div>
+
+        <div id="alerts"></div>
+    </div>
+
+    <!-- 블로그 생성 설정 모달 -->
+    <div class="modal fade" id="blogGenerationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-pen"></i> 블로그 글 생성 설정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 선택된 제목 표시 -->
+                    <div class="alert alert-info">
+                        <strong>선택된 제목:</strong> <span id="selectedTitleDisplay"></span>
+                    </div>
+
+                    <!-- 글 유형 선택 -->
+                    <div class="mb-4">
+                        <h6>글 유형 선택</h6>
+                        <select class="form-select" id="promptType">
+                            <option selected>글 유형을 선택하세요</option>
+                        </select>
+                    </div>
+
+                    <!-- 글자수 설정 -->
+                    <div class="mb-4">
+                        <h6>글자수 설정</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label">최소 글자수 (문단별 1500자)</label>
+                            <select id="minChars" class="form-select">
+                                <option value="6000" selected>6000자 (4문단×1500자)</option>
+                                <option value="7500">7500자 (5문단)</option>
+                                <option value="9000">9000자 (6문단)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">최대 글자수</label>
+                            <select id="maxChars" class="form-select">
+                                <option value="8000">8000자</option>
+                                <option value="10000" selected>10000자</option>
+                                <option value="12000">12000자</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 추가 프롬프트 -->
+                    <div class="mb-4">
+                        <h6>추가 요청사항 (선택)</h6>
+                        <textarea id="additionalPrompt" class="form-control" rows="3" placeholder="특별한 요청사항이 있다면 입력하세요 (예: 특정 관점, 톤앤매너 등)"></textarea>
+                    </div>
+
+                    <!-- 추가 설정 -->
+                    <div class="mb-4">
+                        <h6>추가 설정</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="useKeywords">
+                            <label class="form-check-label" for="useKeywords">
+                                키워드 자동 삽입 (<strong>추천:</strong> 2~3개)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 생성 설정 알림 -->
+                    <div class="alert alert-warning">
+                        <strong>주의:</strong> 글자수 설정에 따라 생성 시간이 달라질 수 있습니다.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> 닫기
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="generateBlog()">
+                        <i class="fas fa-magic"></i> 블로그 글 생성
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 프롬프트 유형 선택 카드 -->
+    <template id="promptTypeCardTemplate">
+        <div class="prompt-type-card" data-prompt-type="{prompt_type}">
+            <h6>{title}</h6>
+            <small>{description}</small>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentBlogContent = '';
+        let generatedImages = [];
+        let selectedTitle = '';
+        let currentSessionId = null;
+        let currentKeyword = '';
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료');
+
+            // 이벤트 리스너 먼저 등록
+            initializeEventListeners();
+
+            // 요소 존재 확인 후 함수 실행
+            setTimeout(function() {
+                try {
+                    loadRecommendedKeywords();
+                    loadCategoryKeywords();
+                    loadPromptTypes();
+                } catch (error) {
+                    console.error('초기화 중 오류:', error);
+                }
+            }, 100);
+
+            // 탭 변경 시 액션 버튼 표시/숨김 이벤트 리스너 추가
+            document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function (e) {
+                    const targetId = e.target.getAttribute('data-bs-target');
+                    showActionButtons(targetId);
+                });
+            });
+        });
+
+        // 추천 키워드 새로고침 함수
+        function refreshRecommendedKeywords() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.classList.add('fa-spin');
+
+            fetch('/api/recommended-keywords')
+                .then(response => response.json())
+                .then(data => {
+                    displayRecommendedKeywords(data);
+                    updateLastUpdateTime();
+                })
+                .catch(error => {
+                    console.error('추천 키워드 로드 오류:', error);
+                })
+                .finally(() => {
+                    refreshIcon.classList.remove('fa-spin');
+                });
+        }
+
+        // 추천 키워드 로드
+        function loadRecommendedKeywords() {
+            fetch('/api/recommended-keywords')
+                .then(response => response.json())
+                .then(data => {
+                    displayRecommendedKeywords(data);
+                    updateLastUpdateTime();
+                })
+                .catch(error => {
+                    console.error('추천 키워드 로드 오류:', error);
+                    document.getElementById('recommendedKeywords').innerHTML = 
+                        '<div class="text-center text-muted">키워드를 불러올 수 없습니다</div>';
+                });
+        }
+
+        // 추천 키워드 표시
+        function displayRecommendedKeywords(data) {
+            const container = document.getElementById('recommendedKeywords');
+
+            if (!data.google_trends && !data.naver_datalab) {
+                container.innerHTML = '<div class="text-center text-muted">데이터를 불러오는 중...</div>';
+                return;
+            }
+
+            let html = '';
+
+            // 구글 트렌드 키워드
+            if (data.google_trends && data.google_trends.length > 0) {
+                html += `
+                    <div class="trending-section">
+                        <div class="trending-title">
+                            <i class="fab fa-google"></i> 구글 트렌드
+                        </div>
+                        <div class="trending-keywords-list">
+                `;
+
+                data.google_trends.forEach((item, index) => {
+                    html += `
+                        <span class="trending-keyword-item google-keyword" onclick="selectKeyword('${item.keyword}')">
+                            <span class="keyword-rank">${index + 1}.</span>
+                            ${item.keyword}
+                        </span>
+                    `;
+                    if (index < data.google_trends.length - 1) {
+                        html += '<span class="keyword-separator">•</span>';
+                    }
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 네이버 데이터랩 키워드
+            if (data.naver_datalab && data.naver_datalab.length > 0) {
+                html += `
+                    <div class="trending-section">
+                        <div class="trending-title">
+                            <i class="fas fa-chart-line"></i> 네이버 데이터랩
+                        </div>
+                        <div class="trending-keywords-list">
+                `;
+
+                data.naver_datalab.forEach((item, index) => {
+                    html += `
+                        <span class="trending-keyword-item naver-keyword" onclick="selectKeyword('${item.keyword}')">
+                            <span class="keyword-rank">${index + 1}.</span>
+                            ${item.keyword}
+                        </span>
+                    `;
+                    if (index < data.naver_datalab.length - 1) {
+                        html += '<span class="keyword-separator">•</span>';
+                    }
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (html === '') {
+                html = '<div class="text-center text-muted">추천 키워드가 없습니다</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 카테고리별 키워드 로드
+        function loadCategoryKeywords() {
+            fetch('/api/category-keywords')
+                .then(response => response.json())
+                .then(data => {
+                    displayCategoryKeywords(data);
+                })
+                .catch(error => {
+                    console.error('카테고리 로드 중 오류:', error);
+                    document.getElementById('categoryList').innerHTML = 
+                        '<div class="text-center text-muted">카테고리를 불러올 수 없습니다</div>';
+                });
+        }
+
+        // 카테고리 키워드 표시
+        function displayCategoryKeywords(categories) {
+            const container = document.getElementById('categoryList');
+            let html = '';
+
+            categories.forEach(category => {
+                html += `
+                    <div class="category-item" onclick="toggleCategory(this)">
+                        <div class="category-name">
+                            ${category.icon} ${category.name}
+                        </div>
+                        <div class="category-desc">
+                            ${category.description}
+                        </div>
+                        <div class="keyword-list">
+                `;
+
+                category.keywords.forEach((keyword, index) => {
+                    html += `
+                        <span class="keyword-item" onclick="event.stopPropagation(); selectKeyword('${keyword}')">
+                            ${keyword}
+                        </span>
+                    `;
+                    if (index < category.keywords.length - 1) {
+                        html += '<span class="keyword-separator">•</span>';
+                    }
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 키워드 선택
+        function selectKeyword(keyword) {
+            document.getElementById('keywordInput').value = keyword;
+            showAlert(`"${keyword}" 키워드가 선택되었습니다!`, 'success');
+        }
+
+        // 마지막 업데이트 시간 표시
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdateTime').textContent = timeString;
+        }
+
+        // 검색 시작
+        function startSearch() {
+            console.log('검색 시작 함수 호출됨');
+            
+            const keywordInput = document.getElementById('keywordInput');
+            const searchCountSelect = document.getElementById('searchCount');
+            const sortTypeSelect = document.getElementById('sortType');
+            
+            if (!keywordInput) {
+                console.error('키워드 입력 필드를 찾을 수 없습니다.');
+                showAlert('키워드 입력 필드를 찾을 수 없습니다.', 'danger');
+                return;
+            }
+            
+            const keyword = keywordInput.value.trim();
+            console.log('입력된 키워드:', keyword);
+
+            if (!keyword) {
+                showAlert('키워드를 입력해주세요.', 'warning');
+                return;
+            }
+
+            currentKeyword = keyword;
+            showLoading(true);
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            const count = searchCountSelect ? searchCountSelect.value : '15';
+            const sort = sortTypeSelect ? sortTypeSelect.value : 'sim';
+
+            fetch('/api/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    keyword: keyword,
+                    search_count: parseInt(count),
+                    sort_type: sort
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentSessionId = data.session_id;
+                    displaySearchResults(data);
+                    showActionButtons('#search-content');
+                } else {
+                    showAlert(data.error || '검색 중 오류가 발생했습니다.', 'danger');
+                }
+            })
+            .catch(error => {
+                if (error.status === 401) {
+                    showAlert('세션이 만료되었습니다. 다시 로그인해주세요.', 'warning');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    showAlert('네트워크 오류가 발생했습니다.', 'danger');
+                }
+                console.error('검색 오류:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+        // 추천 키워드 새로고침 함수 추가
+        function refreshRecommendedKeywords() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (refreshIcon) {
+                refreshIcon.classList.add('fa-spin');
+            }
+
+            fetch('/api/recommended-keywords')
+                .then(response => response.json())
+                .then(data => {
+                    displayRecommendedKeywords(data);
+                    updateLastUpdateTime();
+                })
+                .catch(error => {
+                    console.error('추천 키워드 로드 오류:', error);
+                })
+                .finally(() => {
+                    if (refreshIcon) {
+                        refreshIcon.classList.remove('fa-spin');
+                    }
+                });
+        }
+
+        // 카테고리 토글
+        function toggleCategory(element) {
+            const keywordList = element.querySelector('.keyword-list');
+            if (keywordList.style.display === 'none') {
+                keywordList.style.display = 'block';
+                element.style.background = 'rgba(255,255,255,0.1)';
+            } else {
+                keywordList.style.display = 'none';
+                element.style.background = 'rgba(255,255,255,0.05)';
+            }
+        }
+
+        // 사이드바 토글
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('sidebarToggle');
+
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('collapsed');
+        }
+
+        // 액션 버튼 표시/숨김
+        function showActionButtons(targetId) {
+            // 모든 액션 버튼 숨김
+            document.querySelectorAll('.action-buttons').forEach(btn => {
+                btn.style.display = 'none';
+            });
+
+            // 해당 탭의 액션 버튼 표시
+            let actionId = '';
+            switch(targetId) {
+                case '#search-content':
+                    actionId = document.getElementById('analysisResults').style.display === 'none' ? 
+                              'search-actions' : 'analysis-actions';
+                    break;
+                case '#titles-content':
+                    actionId = 'titles-actions';
+                    break;
+                case '#blog-content':
+                    actionId = 'blog-actions';
+                    break;
+                case '#images-content':
+                    actionId = 'images-actions';
+                    break;
+            }
+
+            if (actionId) {
+                const actionElement = document.getElementById(actionId);
+                if (actionElement) {
+                    actionElement.style.display = 'flex';
+                }
+            }
+        }
+
+        // 로딩 상태 표시/숨김
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // 이벤트 리스너 등록 함수
+        function initializeEventListeners() {
+            console.log('이벤트 리스너 초기화 시작');
+            
+            // 검색 버튼 클릭
+            const searchBtn = document.getElementById('searchBtn');
+            if (searchBtn) {
+                console.log('검색 버튼 이벤트 리스너 등록');
+                searchBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    startSearch();
+                });
+            } else {
+                console.error('검색 버튼을 찾을 수 없습니다.');
+            }
+
+            // 키워드 입력 필드에서 엔터키 처리
+            const keywordInput = document.getElementById('keywordInput');
+            if (keywordInput) {
+                console.log('키워드 입력 필드 이벤트 리스너 등록');
+                keywordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        startSearch();
+                    }
+                });
+            } else {
+                console.error('키워드 입력 필드를 찾을 수 없습니다.');
+            }
+        }
+
+        function showAlert(message, type = 'danger', duration = 5000) {
+            const alertsDiv = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            alertsDiv.appendChild(alert);
+
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, duration);
+        }
+
+        function displaySearchResults(data) {
+            document.getElementById('searchResults').innerHTML = `
+                <h5><i class="fas fa-search"></i> "${currentKeyword}" 검색 결과 (${data.collected_titles}개 제목 수집)</h5>
+                <div class="alert alert-info">
+                    <strong>수집 완료:</strong> 총 ${data.total_results}건의 검색 결과에서 ${data.collected_titles}개의 제목을 수집했습니다.
+                </div>
+                <div class="row">
+                    ${data.titles.slice(0, 12).map((title, index) => `
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">${title}</h6>
+                                    <span class="badge bg-primary">${index + 1}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // AI 분석 시작
+        function analyzeResults() {
+            if (!currentSessionId) {
+                showAlert('먼저 검색을 실행해주세요.', 'warning');
+                return;
+            }
+
+            showLoading(true);
+
+            fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    analysis_type: 'comprehensive'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayAnalysisResults(data);
+                    showActionButtons('#search-content');
+                } else {
+                    showAlert(data.error || 'AI 분석 중 오류가 발생했습니다.', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('AI 분석 중 네트워크 오류가 발생했습니다.', 'danger');
+                console.error('분석 오류:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+        function displayAnalysisResults(data) {
+            document.getElementById('analysisResults').style.display = 'block';
+            document.getElementById('analysisResults').innerHTML = `
+                <div class="mt-4">
+                    <h5><i class="fas fa-brain"></i> AI 분석 결과</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="white-space: pre-wrap; line-height: 1.6;">${data.analysis_result}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 제목 생성
+        function generateTitles() {
+            if (!currentSessionId) {
+                showAlert('먼저 검색과 분석을 완료해주세요.', 'warning');
+                return;
+            }
+
+            showLoading(true);
+
+            fetch('/api/generate_titles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    num_titles: 10
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayTitleResults(data.titles);
+                    // displayTitleResults 함수 내에서 탭 이동 처리됨
+                } else {
+                    showAlert(data.error || '제목 생성 중 오류가 발생했습니다.', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('제목 생성 중 네트워크 오류가 발생했습니다.', 'danger');
+                console.error('제목 생성 오류:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+        function displayTitleResults(titles) {
+            document.getElementById('titleResults').innerHTML = `
+                <h5><i class="fas fa-lightbulb"></i> 생성된 블로그 제목들</h5>
+                <p class="text-muted">제목을 클릭하여 선택하세요</p>
+                <div class="list-group">
+                    ${titles.map((title, index) => `
+                        <div class="list-group-item list-group-item-action" onclick="selectTitle('${title}')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${index + 1}. ${title}</h6>
+                                <span class="badge bg-primary">선택</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // 제목 생성 후 자동으로 생성제목 탭으로 이동
+            const titlesTab = document.querySelector('#titles-tab');
+            if (titlesTab) {
+                titlesTab.click();
+            }
+        }
+
+        function selectTitle(title) {
+            selectedTitle = title;
+            showAlert(`"${title}" 제목이 선택되었습니다!`, 'success');
+
+            // 선택된 제목 하이라이트
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // 프롬프트 타입 로드
+        function loadPromptTypes() {
+            const promptTypeSelect = document.getElementById('promptType');
+            if (!promptTypeSelect) return;
+
+            // 기본 프롬프트 타입들
+            const promptTypes = {
+                'informative': '정보 제공형',
+                'experience': '경험 공유형', 
+                'comparison': '비교 분석형',
+                'howto': '실용 가이드형',
+                'storytelling': '스토리텔링형'
+            };
+
+            promptTypeSelect.innerHTML = '';
+            Object.entries(promptTypes).forEach(([key, name]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = name;
+                promptTypeSelect.appendChild(option);
+            });
+        }
+
+        function openBlogGenerationModal() {
+            if (!selectedTitle) {
+                showAlert('먼저 제목을 선택해주세요.', 'warning');
+                return;
+            }
+
+            // 선택된 제목을 모달에 표시
+            document.getElementById('selectedTitleDisplay').textContent = selectedTitle;
+
+            const modal = new bootstrap.Modal(document.getElementById('blogGenerationModal'));
+            modal.show();
+        }
+
+        function copyCurrentBlog() {
+            if (!currentBlogContent) {
+                showAlert('복사할 블로그 글이 없습니다.', 'warning');
+                return;
+            }
+
+            navigator.clipboard.writeText(currentBlogContent)
+                .then(() => {
+                    showAlert('블로그 글이 클립보드에 복사되었습니다!', 'success');
+                })
+                .catch(() => {
+                    showAlert('복사 중 오류가 발생했습니다.', 'danger');
+                });
+        }
+
+        function downloadCurrentBlog() {
+            if (!currentBlogContent || !selectedTitle) {
+                showAlert('다운로드할 블로그 글이 없습니다.', 'warning');
+                return;
+            }
+
+            const blob = new Blob([currentBlogContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${selectedTitle}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showAlert('블로그 글이 다운로드되었습니다!', 'success');
+        }
+
+        function generateImages_(count) {
+            if (!currentBlogContent) {
+                showAlert('먼저 블로그 글을 생성해주세요.', 'warning');
+                return;
+            }
+
+            showLoading(true);
+
+            fetch('/generate-images', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: selectedTitle,
+                    content: currentBlogContent,
+                    count: count
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    generatedImages = data.images;
+                    displayImageResults(data.images);
+                    // 이미지 탭으로 이동
+                    document.querySelector('#images-tab').click();
+                } else {
+                    showAlert(data.error || '이미지 생성 중 오류가 발생했습니다.', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('이미지 생성 중 네트워크 오류가 발생했습니다.', 'danger');
+                console.error('이미지 생성 오류:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+        function displayImageResults(images) {
+            document.getElementById('imageResults').innerHTML = `
+                <h5><i class="fas fa-images"></i> 생성된 이미지들 (${images.length}개)</h5>
+                <div class="row image-results">
+                    ${images.map((image, index) => `
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="image-container" style="height: 300px; overflow: hidden;">
+                                    <img src="${image.url}" alt="생성된 이미지 ${index + 1}" 
+                                         class="card-img-top w-100 h-100" style="object-fit: cover;">
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text small">${image.prompt}</p>
+                                    <button class="btn btn-sm btn-primary" onclick="downloadImage('${image.url}', '이미지_${index + 1}')">
+                                        <i class="fas fa-download"></i> 다운로드
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function downloadImage(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename + '.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadAllImagesAsZip() {
+            if (!currentSessionId) {
+                showAlert('세션 정보가 없습니다. 먼저 검색을 다시 실행해주세요.', 'warning');
+                return;
+            }
+
+            showLoading(true);
+
+            // ZIP 다운로드를 위한 새 창으로 열기
+            const downloadUrl = `/api/download_images/${currentSessionId}`;
+            console.log(`🔍 다운로드 URL: ${downloadUrl}`);
+            console.log(`📋 현재 세션 ID: ${currentSessionId}`);
+
+            fetch(downloadUrl, {
+                method: 'GET'
+            })
+            .then(response => {
+                console.log(`📡 응답 상태: ${response.status}`);
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '다운로드 실패');
+                    });
+                }
+            })
+            .then(blob => {
+                // Blob을 사용하여 파일 다운로드
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'generated_images.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showAlert('이미지 다운로드가 완료되었습니다.', 'success');
+            })
+            .catch(error => {
+                console.error('다운로드 오류:', error);
+                showAlert(`이미지 다운로드 중 오류가 발생했습니다: ${error.message}`, 'danger');
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+        function generateBlog() {
+            if (!selectedTitle) {
+                showAlert('제목을 선택해주세요.', 'warning');
+                return;
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('blogGenerationModal'));
+            modal.hide();
+
+            showLoading(true);
+
+            const promptType = document.getElementById('promptType').value;
+            const minChars = document.getElementById('minChars').value;
+            const maxChars = document.getElementById('maxChars').value;
+            const additionalPrompt = document.getElementById('additionalPrompt').value;
+
+            fetch('/api/generate_blog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    title: selectedTitle,
+                    prompt_type: promptType,
+                    additional_prompt: additionalPrompt,
+                    min_chars: parseInt(minChars),
+                    max_chars: parseInt(maxChars)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentBlogContent = data.content;
+                    displayBlogResults(data);
+                    document.querySelector('#blog-tab').click();
+                } else {
+                    showAlert(data.error || '블로그 글 생성 중 오류가 발생했습니다.', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('블로그 글 생성 중 네트워크 오류가 발생했습니다.', 'danger');
+                console.error('블로그 생성 오류:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+
+function displayBlogResults(data) {
+            const blogResults = document.getElementById('blogResults');
+            if (blogResults) {
+                blogResults.innerHTML = `
+                    <div class="blog-result-header mb-3">
+                        <h5><i class="fas fa-file-alt"></i> ${data.title}</h5>
+                        <div class="alert alert-info d-flex justify-content-between align-items-center">
+                            <span>총 글자수: <strong>${data.char_count}</strong>자</span>
+                            <small>SEO 최적화 완료 ✅</small>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="blogContent" style="white-space: pre-wrap; line-height: 1.8; font-size: 16px;">${data.content}</div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary me-2" onclick="copyBlogContent()">
+                                <i class="fas fa-copy"></i> 복사
+                            </button>
+                            <button class="btn btn-success me-2" onclick="downloadBlogContent()">
+                                <i class="fas fa-download"></i> 다운로드
+                            </button>
+                            <button class="btn btn-info" onclick="previewSEO()">
+                                <i class="fas fa-search"></i> SEO 미리보기
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function copyBlogContent() {
+            if (currentBlogContent) {
+                navigator.clipboard.writeText(currentBlogContent).then(() => {
+                    showAlert('블로그 내용이 클립보드에 복사되었습니다.', 'success');
+                }).catch(err => {
+                    showAlert('복사 중 오류가 발생했습니다.', 'danger');
+                });
+            }
+        }
+
+        function downloadBlogContent() {
+            if (currentBlogContent) {
+                const blob = new Blob([currentBlogContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${selectedTitle || '블로그_글'}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showAlert('블로그 글이 다운로드되었습니다.', 'success');
+            }
+        }
+
+        function previewSEO() {
+            if (currentBlogContent) {
+                const keywordCount = (currentBlogContent.match(new RegExp(currentKeyword, 'gi')) || []).length;
+                const charCount = currentBlogContent.length;
+                const wordCount = currentBlogContent.split(/\s+/).length;
+
+                showAlert(`SEO 분석 결과:\n- 키워드 '${currentKeyword}' ${keywordCount}회 포함\n- 총 ${charCount}자, ${wordCount}단어\n- SEO 최적화: ${keywordCount >= 5 ? '우수' : '보통'}`, 'info');
+            }
+        }
+
+        function refreshRecommendedKeywords() {
+            console.log('키워드 새로고침 시작');
+            loadRecommendedKeywords();
+            showAlert('추천 키워드를 새로고침했습니다.', 'success');
+        }
+
+        // 프롬프트 타입 로드
+        function loadPromptTypes() {
+            const promptTypeSelect = document.getElementById('promptType');
+            if (!promptTypeSelect) return;
+
+            const promptTypes = {
+                'default': '기본 스타일',
+                'informative': '정보 제공 스타일',
+                'persuasive': '설득 스타일',
+                'humorous': '유머 스타일',
+                'technical': '기술 스타일'
+            };
+
+            promptTypeSelect.innerHTML = '';
+            for (const key in promptTypes) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = promptTypes[key];
+                promptTypeSelect.appendChild(option);
+            }
+        }
+
+        // 페이지 로드 완료 후 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료');
+
+            // 안전하게 함수 호출
+            try {
+                loadRecommendedKeywords();
+                loadCategoryKeywords();
+                loadPromptTypes();
+            } catch (error) {
+                console.error('초기화 중 오류:', error);
+            }
+
+            // 필수 요소들 존재 확인
+            const requiredElements = ['promptType', 'minChars', 'maxChars'];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    console.warn(`${id} 요소가 없습니다.`);
+                }
+            });
+        });
+
+        // 키워드 선택 함수
+        function selectKeyword(keyword) {
+            const keywordInput = document.getElementById('keywordInput');
+            if (keywordInput) {
+                keywordInput.value = keyword;
+                showAlert(`키워드 "${keyword}"가 선택되었습니다.`, 'success');
+            }
+        }
+
+        // 추천 키워드 새로고침 함수
+        function refreshRecommendedKeywords() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (refreshIcon) {
+                refreshIcon.classList.add('fa-spin');
+            }
+
+            loadRecommendedKeywords()
+                .finally(() => {
+                    if (refreshIcon) {
+                        refreshIcon.classList.remove('fa-spin');
+                    }
+                });
+        }
+</script>
+</body>
+</html>

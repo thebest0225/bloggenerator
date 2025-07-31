@@ -1,0 +1,34 @@
+modules = ["python-3.12", "web", "bash"]
+run = "python main.py"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+deploymentTarget = "gce"
+run = ["sh", "-c", "python -m flask --app web_app run --host=0.0.0.0 --port=5000"]
+
+[packager]
+language = "python3"
+
+[packager.features]
+guessImports = true
+packageSearch = true
+enabledForHosting = true
+run = ["sh", "-c", "python web_app.py"]
+
+[workflows]
+runButton = "Run Flask App"
+
+[[workflows.workflow]]
+name = "Run Flask App"
+author = 44547286
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m flask --app web_app run --host=0.0.0.0 --port=5000 --debug"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

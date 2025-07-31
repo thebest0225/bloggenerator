@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>망고 블로그 포스트 - 로그인</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #FFF7E3;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            min-width: 400px;
+            border: 1px solid rgba(255, 215, 158, 0.3);
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            height: auto;
+        }
+
+        .login-title {
+            color: #B8860B;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #F5DEB3;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 251, 240, 0.8);
+        }
+
+        .form-control:focus {
+            border-color: #DAA520;
+            box-shadow: 0 0 0 0.2rem rgba(218, 165, 32, 0.2);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
+            color: white;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .password-help {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 15px;
+        }
+
+        .features {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .feature-badge {
+            background: rgba(218, 165, 32, 0.1);
+            color: #B8860B;
+            border: 1px solid rgba(245, 222, 179, 0.3);
+            border-radius: 20px;
+            padding: 5px 12px;
+            margin: 0 5px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- 로고 -->
+        <div class="logo-container">
+            <img src="/attached_assets/logo.png" alt="망고 블로그 포스트">
+        </div>
+
+        <!-- 제목 -->
+        <h2 class="login-title">
+            <i class="fas fa-shield-alt"></i> 보안 로그인
+        </h2>
+
+        <!-- 오류 메시지 -->
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- 로그인 폼 -->
+        <form method="POST">
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text" style="background: #FFFACD; border-color: #F5DEB3;">
+                        <i class="fas fa-lock" style="color: #B8860B;"></i>
+                    </span>
+                    <input type="password" class="form-control" name="password" placeholder="패스워드를 입력하세요" required autofocus>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt"></i> 로그인
+            </button>
+        </form>
+
+        <!-- 도움말 -->
+        <div class="password-help">
+            <i class="fas fa-info-circle"></i> 
+            관리자 패스워드가 필요합니다
+        </div>
+
+        <!-- 기능 소개 -->
+        <div class="features">
+            <div class="mb-2">
+                <small class="text-muted">망고 블로그 포스트 기능:</small>
+            </div>
+            <span class="feature-badge">🚀 AI 분석</span>
+            <span class="feature-badge">📝 자동 생성</span>
+            <span class="feature-badge">🎯 키워드 최적화</span>
+            <span class="feature-badge">🖼️ 이미지 생성</span>
+        </div>
+
+        <!-- 작성자 정보 -->
+        <div class="mt-3">
+            <small class="text-muted">by Mangoabba</small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 폼 제출 시 로딩 효과
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = this.querySelector('.btn-login');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인 중...';
+            button.disabled = true;
+        });
+
+        // 패스워드 입력 필드에 포커스
+        document.querySelector('input[name="password"]').focus();
+    </script>
+</body>
+</html>
